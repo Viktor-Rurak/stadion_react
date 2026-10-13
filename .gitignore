@@ -1,0 +1,21 @@
+# Залежності та збірка — відтворюються командами npm install / npm run build
+node_modules/
+dist/
+.vite/
+
+# Секрети. Ці файли містять паролі від камери та ключі — у git їм не місце.
+camera-counter/config.env
+camera-stream/stream.env
+
+# Робочі файли програм для камери
+camera-counter/.venv/
+camera-counter/debug.jpg
+camera-counter/*.pt
+
+# Системне сміття
+.DS_Store
+Thumbs.db
+*.log
+
+# Локальні нотатки з тестовими даними
+*.local.md
