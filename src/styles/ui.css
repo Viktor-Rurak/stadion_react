@@ -1,0 +1,400 @@
+/* ==========================================================================
+   СПІЛЬНІ «ЦЕГЛИНКИ», з яких складені всі сторінки:
+     кнопки        .btn-primary  .btn-ghost  .btn-small
+     позначки      .badge
+     сповіщення    .notice  (is-error / is-success / is-info)
+     поля форм     .field  .field-label  .field-input  .field-hint …
+     підтвердження дії  .confirm-inline  («Точно видалити?» прямо в картці)
+     каркас сторінки  .page  .page-title  .page-subtitle  .page-cta
+     картка-крок   .step  .step-title  .step-note
+     секція головної  .section  .section-head  .section-title
+   Якщо щось виглядає однаково на різних сторінках — воно описане тут.
+   ========================================================================== */
+
+/* Зелена кнопка-пігулка (використовується в шапці та секції запису) */
+.btn-primary {
+  flex: none;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  text-align: center;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: var(--bg);
+  font-size: 13.5px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: background 0.2s ease;
+}
+
+.btn-primary:hover {
+  background: var(--accent-hover);
+  color: var(--bg);
+}
+
+.section {
+  max-width: 1500px;
+  margin: 0 auto;
+  padding: clamp(44px, 6vw, 88px) var(--side-pad);
+}
+
+/* Секції після першої не мають верхнього відступу — між ними лінія-розділювач */
+.section + .section {
+  padding-top: 0;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: clamp(20px, 3vw, 36px);
+  border-bottom: 1px solid var(--border-strong);
+  padding-bottom: 16px;
+}
+
+.section-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(25px, 3vw, 40px);
+  letter-spacing: -0.02em;
+}
+
+.badge {
+  align-self: flex-start;
+  font-size: 13px;
+  color: var(--accent-text);
+  background: oklch(0.72 0.13 148 / 0.13);
+  border-radius: 999px;
+  padding: 5px 13px;
+}
+
+/* Прозора кнопка з тонкою рамкою — «Увійти» */
+.btn-ghost {
+  padding: 9px 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: none;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.btn-ghost:hover {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0; /* щоб поле не розпирало сітку */
+}
+
+.field-label {
+  font-size: 12.5px;
+  color: var(--text-faint);
+  letter-spacing: 0.03em;
+}
+
+.field-input {
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 14.5px;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.field-input::placeholder { color: rgba(230, 233, 230, 0.28); }
+
+.field-input:focus {
+  outline: none;
+  background: rgba(255, 255, 255, 0.06);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px oklch(0.72 0.13 148 / 0.16);
+}
+
+/* Автозаповнення Chrome підставляє власний світлий фон і темний текст,
+   через що поле випадає з темної теми. Перебиваємо це величезною
+   внутрішньою тінню — вона замальовує чужий фон кольором сайту. */
+.field-input:-webkit-autofill,
+.field-input:-webkit-autofill:hover,
+.field-input:-webkit-autofill:active {
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
+  box-shadow: 0 0 0 100px #1c2124 inset;
+  /* Chrome інакше повертає свій фон анімацією — відсуваємо її «в ніколи» */
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Те саме, але з фокусом: лишаємо ще й зелене кільце */
+.field-input:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
+  box-shadow: 0 0 0 100px #1c2124 inset,
+              0 0 0 3px oklch(0.72 0.13 148 / 0.16);
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Ім'я та прізвище поруч */
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.field-hint {
+  font-size: 11.5px;
+  color: var(--text-faint);
+}
+
+.field-hint.is-ok { color: var(--accent-text); }
+
+.field-hint.is-bad { color: oklch(0.72 0.16 25); }
+
+@media (max-width: 520px) {
+  .field-row { grid-template-columns: 1fr; }
+}
+
+/* Заглушка, поки React підвантажує сторінку (і сторінка «не знайдено») */
+.page-loading {
+  min-height: 60vh;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 16px;
+  padding: 40px var(--side-pad);
+  color: var(--text-faint);
+  font-size: 14px;
+  text-align: center;
+}
+
+.page-loading p { margin: 0; }
+
+.page-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(28px, 4vw, 42px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+
+.page-subtitle {
+  margin: 8px 0 0;
+  font-size: 14.5px;
+  color: var(--text-muted);
+}
+
+/* Кожен крок — окрема картка */
+.step {
+  min-width: 0;
+  padding: clamp(16px, 2.4vw, 24px);
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+}
+
+.step-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 14px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.step-number {
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: oklch(0.72 0.13 148 / 0.16);
+  color: var(--accent-text);
+  font-size: 12.5px;
+}
+
+.step-note {
+  margin: 12px 0 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-faint);
+}
+
+.step-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Повідомлення: помилка, успіх, підказка */
+.notice { margin: 0; padding: 11px 14px; border-radius: 12px; font-size: 13px; line-height: 1.45; }
+
+.notice.is-error {
+  background: oklch(0.55 0.16 25 / 0.16);
+  border: 1px solid oklch(0.6 0.16 25 / 0.35);
+  color: oklch(0.85 0.09 25);
+}
+
+.notice.is-success {
+  background: oklch(0.72 0.13 148 / 0.14);
+  border: 1px solid oklch(0.72 0.13 148 / 0.4);
+  color: var(--accent-text);
+}
+
+.notice.is-info {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-muted);
+}
+
+/* Посилання, що виглядає як маленька кнопка */
+a.btn-small { display: inline-block; text-align: center; }
+
+.badge.is-muted {
+  color: var(--text-faint);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.btn-small {
+  flex: none;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: none;
+  color: var(--text);
+  font-family: inherit;
+  font-size: 12.5px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+
+.btn-small:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.btn-small.is-primary {
+  background: var(--accent);
+  border-color: transparent;
+  color: var(--bg);
+  font-weight: 500;
+}
+
+.btn-small.is-primary:hover:not(:disabled) { background: var(--accent-hover); }
+
+.btn-small:disabled { opacity: 0.4; cursor: not-allowed; }
+
+select.field-input {
+  appearance: none;
+  cursor: pointer;
+  /* місце під стрілку + сама стрілка малюнком */
+  padding-right: 38px;
+  background-image: linear-gradient(45deg, transparent 50%, #9aa3a4 50%),
+                    linear-gradient(135deg, #9aa3a4 50%, transparent 50%);
+  background-position: calc(100% - 19px) center, calc(100% - 14px) center;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+}
+
+select.field-input option {
+  background: #1b2023;
+  color: var(--text);
+}
+
+/* Підтвердження прямо в картці гри (замість системного вікна браузера) */
+.confirm-inline {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.confirm-question { font-size: 13px; color: var(--text); }
+
+.btn-small.is-danger {
+  border-color: oklch(0.65 0.16 25 / 0.55);
+  background: oklch(0.55 0.16 25 / 0.2);
+  color: oklch(0.88 0.08 25);
+}
+
+.btn-small.is-danger:hover:not(:disabled) {
+  border-color: oklch(0.7 0.16 25 / 0.8);
+  background: oklch(0.55 0.16 25 / 0.32);
+}
+
+@media (max-width: 600px) {
+  .confirm-inline { width: 100%; justify-content: flex-start; }
+}
+
+/* Обгортка простих сторінок: новини, адмінпанель */
+.page {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 44px) var(--side-pad) clamp(40px, 6vw, 72px);
+}
+
+.page-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: clamp(18px, 3vw, 28px);
+}
+
+.page-head .page-subtitle { max-width: 520px; }
+
+.page-cta { display: inline-block; margin-top: 18px; }
+
+.empty-note {
+  margin: 0;
+  padding: 26px 20px;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 18px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--text-faint);
+}
+
+.field-file {
+  font-family: inherit;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.field-file::file-selector-button {
+  margin-right: 12px;
+  padding: 9px 16px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.field-file::file-selector-button:hover { border-color: rgba(255, 255, 255, 0.4); }
+
+@media (max-width: 600px) {
+  .page-head { flex-direction: column; }
+}
+
+/* Відступ між кількома картками-кроками на простих сторінках */
+.page .step + .step { margin-top: 14px; }

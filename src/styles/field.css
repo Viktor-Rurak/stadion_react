@@ -1,0 +1,93 @@
+/* ==========================================================================
+   СТОРІНКА МАЙДАНЧИКА (pages/FieldPage.jsx і components/field/):
+   лічильник людей на полі, плеєр трансляції, вимикач в адмінпанелі.
+   ========================================================================== */
+
+.occupancy {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.occupancy-number {
+  font-family: var(--font-display);
+  font-size: 56px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--accent-text);
+  font-variant-numeric: tabular-nums;
+}
+
+.occupancy-text {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.occupancy-main { font-size: 17px; font-weight: 500; }
+
+.occupancy-note { font-size: 12.5px; color: var(--text-faint); }
+
+.occupancy.is-unknown .occupancy-note { font-size: 14px; }
+
+/* Маленький варіант у картці на головній */
+.occupancy.is-compact {
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.occupancy.is-compact .occupancy-number { font-size: 28px; }
+
+.occupancy.is-compact .occupancy-main { font-size: 14px; }
+
+.field-description {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-muted);
+}
+
+/* Плеєр YouTube: завжди 16:9 і на всю ширину картки */
+.live-player {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--border);
+}
+
+.live-player iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* «Трансляція зараз не ведеться» та «Завантажую трансляцію…» */
+.live-note {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-muted);
+}
+
+/* Вимикач «Показувати трансляцію на сайті» в адмінпанелі */
+.live-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+.live-switch input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}

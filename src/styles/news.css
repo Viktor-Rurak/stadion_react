@@ -1,0 +1,101 @@
+/* ==========================================================================
+   НОВИНИ (pages/NewsPage.jsx, pages/AdminNewsPage.jsx, components/news/):
+   список новин, картка новини, форма адмінпанелі, перегляд фото.
+   ========================================================================== */
+
+/* --- Список новин --- */
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(14px, 2vw, 20px);
+}
+
+.news-card {
+  overflow: hidden;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  box-shadow: 0 26px 44px -30px rgba(0, 0, 0, 0.9);
+}
+
+.news-image {
+  display: block;
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.news-body { padding: clamp(16px, 2.4vw, 24px); }
+
+.news-date {
+  font-size: 12.5px;
+  letter-spacing: 0.03em;
+  color: var(--text-faint);
+}
+
+.news-title {
+  margin: 6px 0 10px;
+  font-family: var(--font-display);
+  font-size: clamp(19px, 2.4vw, 24px);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+.news-text {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--text-muted);
+  white-space: pre-line; /* зберігаємо абзаци так, як їх набрав адмін */
+  overflow-wrap: anywhere;
+}
+
+.news-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+/* В адмінпанелі картинки менші — щоб список лишався оглядовим */
+.news-list.is-compact .news-image { max-height: 200px; }
+
+/* --- Форма адмінпанелі --- */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.news-textarea {
+  min-height: 150px;
+  resize: vertical;
+  line-height: 1.55;
+  font-family: inherit;
+}
+
+.image-preview {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.image-preview img {
+  max-width: 100%;
+  max-height: 240px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+}
+
+.admin-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.admin-form-actions .btn-primary { padding: 12px 26px; font-size: 14.5px; }

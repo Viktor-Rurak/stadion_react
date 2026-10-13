@@ -4,14 +4,14 @@ import { Suspense, useEffect, useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import Header from './Header.jsx';
 import Footer from './Footer.jsx';
-import AuthModal from './AuthModal.jsx';
+import AuthModal from '../auth/AuthModal.jsx';
 
 export default function Layout() {
   const [authOpen, setAuthOpen] = useState(false);
   const [authTab, setAuthTab] = useState('register');
   const { pathname, hash } = useLocation();
 
-  // tab — з якої вкладки почати: 'register' чи 'login'
+  // tab — з якого екрана почати: 'register', 'login' чи 'forgot' (забули пароль)
   function openAuth(tab = 'register') {
     setAuthTab(tab);
     setAuthOpen(true);

@@ -1,0 +1,368 @@
+/* ==========================================================================
+   ЗАПИС НА КОРТ (pages/BookingPage.jsx і components/booking/):
+   вибір дня, тривалість, сітка часу, вид гри, картки ігор, підсумок.
+   ========================================================================== */
+
+.booking-page {
+  width: 100%;
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: clamp(24px, 4vw, 44px) var(--side-pad) clamp(40px, 6vw, 72px);
+}
+
+.booking-head { margin-bottom: clamp(18px, 3vw, 28px); }
+
+/* Широкий екран: кроки ліворуч, підсумок праворуч */
+.booking-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: clamp(20px, 3vw, 32px);
+  align-items: start;
+}
+
+.booking-main {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+}
+
+/* --- Вибір дня --- */
+.day-picker {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 10px 4px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.day:hover { border-color: rgba(255, 255, 255, 0.22); color: var(--text); }
+
+.day.is-active {
+  background: oklch(0.72 0.13 148 / 0.14);
+  border-color: oklch(0.72 0.13 148 / 0.55);
+  color: var(--text);
+}
+
+.day-weekday { font-size: 11px; white-space: nowrap; }
+
+.day-number {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.15;
+}
+
+.day-month { font-size: 11px; color: var(--text-faint); }
+
+.day.is-active .day-month { color: var(--accent-text); }
+
+/* --- Тривалість: перемикач із трьох варіантів --- */
+.segmented {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 14px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.segmented-option {
+  padding: 9px 6px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.segmented-option:hover { color: var(--text); }
+
+.segmented-option.is-active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+/* --- Сітка часу --- */
+.time-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr)); /* 6 клітинок = 3 години в рядку */
+  gap: 6px;
+  transition: opacity 0.2s ease;
+}
+
+.time-grid.is-loading { opacity: 0.45; pointer-events: none; }
+
+.time-slot {
+  padding: 10px 0;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.time-slot:hover:not(:disabled) { border-color: oklch(0.72 0.13 148 / 0.7); }
+
+.time-slot:disabled { cursor: not-allowed; }
+
+/* Зайнято: заштриховано й перекреслено */
+.time-slot.is-busy {
+  border-color: transparent;
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0 6px, transparent 6px 12px);
+  color: var(--text-faint);
+  text-decoration: line-through;
+}
+
+/* Не вміщається: вільно, але обрана гра сюди не влізе */
+.time-slot.is-tight {
+  border-style: dashed;
+  color: var(--text-faint);
+}
+
+/* Минуло: ледь помітно */
+.time-slot.is-past {
+  border-color: transparent;
+  background: none;
+  color: rgba(230, 233, 230, 0.22);
+}
+
+/* Обраний проміжок гри */
+.time-slot.is-selected {
+  border-style: solid;
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--bg);
+  font-weight: 600;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  margin-top: 14px;
+  font-size: 12px;
+  color: var(--text-faint);
+}
+
+.legend-item { display: inline-flex; align-items: center; gap: 6px; }
+
+.legend-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.legend-swatch.is-busy {
+  background: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.22) 0 2px, transparent 2px 4px);
+}
+
+.legend-swatch.is-tight { border-style: dashed; }
+
+.legend-swatch.is-selected { background: var(--accent); border-color: var(--accent); }
+
+/* --- Картки ігор --- */
+.game-list { display: flex; flex-direction: column; gap: 10px; }
+
+.game-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 14px 16px;
+  border-radius: 16px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.game-card.is-mine {
+  background: oklch(0.72 0.13 148 / 0.08);
+  border-color: oklch(0.72 0.13 148 / 0.35);
+}
+
+.game-card-main { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+
+.game-card-time {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.game-card-meta { font-size: 13.5px; color: var(--text-muted); }
+
+.game-card-note {
+  font-size: 12.5px;
+  color: var(--text-faint);
+  overflow-wrap: anywhere;
+}
+
+.game-card-side { display: flex; align-items: center; gap: 10px; flex: none; }
+
+.game-card-side .badge { align-self: center; }
+
+/* --- Підсумок і кнопка «Записатися» --- */
+.booking-aside { position: sticky; top: 96px; }
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 20px;
+  background: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 26px 44px -26px rgba(0, 0, 0, 0.9);
+}
+
+.summary-main { display: flex; flex-direction: column; gap: 14px; }
+
+.summary-info { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+
+.summary-label { font-size: 12px; letter-spacing: 0.03em; color: var(--text-faint); }
+
+.summary-value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+}
+
+.summary-value.is-empty { color: var(--text-faint); }
+
+.summary-sub { font-size: 13px; color: var(--text-muted); }
+
+.summary-button { width: 100%; padding: 13px 22px; font-size: 14.5px; }
+
+.summary-button:disabled { opacity: 0.45; cursor: not-allowed; }
+
+.summary-hint { margin: 0; font-size: 12px; line-height: 1.45; color: var(--text-faint); }
+
+.choice-group {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.choice {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--text-muted);
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.choice:hover { border-color: rgba(255, 255, 255, 0.26); }
+
+.choice.is-active {
+  background: oklch(0.72 0.13 148 / 0.13);
+  border-color: oklch(0.72 0.13 148 / 0.55);
+  color: var(--text);
+}
+
+.choice-title {
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.choice-text { font-size: 11.5px; line-height: 1.35; }
+
+/* Телефон і вузький планшет: одна колонка,
+   підсумок із кнопкою — панель, прикріплена до низу екрана */
+@media (max-width: 900px) {
+  .booking-layout { grid-template-columns: minmax(0, 1fr); }
+
+  .booking-aside {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 40;
+  }
+
+  .summary {
+    gap: 10px;
+    padding: 12px var(--side-pad) calc(12px + env(safe-area-inset-bottom));
+    border-width: 1px 0 0;
+    border-radius: 18px 18px 0 0;
+    background: rgba(20, 24, 26, 0.94);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow: 0 -18px 40px -20px rgba(0, 0, 0, 0.9);
+  }
+
+  .summary-main { flex-direction: row; align-items: center; justify-content: space-between; }
+
+  .summary-label { display: none; }
+
+  .summary-value { font-size: 17px; }
+
+  .summary-sub { font-size: 12px; }
+
+  .summary-button { width: auto; flex: none; padding: 12px 22px; }
+}
+
+@media (max-width: 600px) {
+  /* Дні гортаються вбік, без смуги прокрутки */
+  .day-picker {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    scrollbar-width: none;
+  }
+
+  .day-picker::-webkit-scrollbar { display: none; }
+
+  .day { flex: 0 0 64px; scroll-snap-align: start; }
+
+  .time-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  /* 2 години в рядку */
+  .choice-group { grid-template-columns: 1fr; }
+
+  .game-card { flex-wrap: wrap; }
+
+  .game-card-side { width: 100%; justify-content: space-between; }
+}
+
+/* Клітинка «замало часу»: натискання пояснює, чому сюди не можна */
+.time-slot.is-tight { cursor: help; }
+
+.time-slot.is-tight:hover { border-color: rgba(255, 255, 255, 0.32); }

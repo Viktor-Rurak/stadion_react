@@ -1,9 +1,9 @@
 // Головна сторінка: план території, об'єкти, про проєкт.
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import PlanMap from '../components/PlanMap.jsx';
-import ObjectsSection from '../components/ObjectsSection.jsx';
-import AboutSection from '../components/AboutSection.jsx';
+import PlanMap from '../components/home/PlanMap.jsx';
+import ObjectsSection from '../components/home/ObjectsSection.jsx';
+import AboutSection from '../components/home/AboutSection.jsx';
 
 export default function HomePage() {
   const { hash, key } = useLocation();
@@ -11,8 +11,11 @@ export default function HomePage() {
   // Посилання на кшталт /#about: прокручуємо до потрібної секції.
   // key змінюється при кожному переході — тож повторний клік теж спрацює.
   useEffect(() => {
-    if (!hash) return;
-    document.querySelector(hash)?.scrollIntoView({ behavior: 'smooth' });
+    const id = hash.slice(1);
+    // Після переходу з листа адреса має вигляд #access_token=… — це не секція.
+    // Без цієї перевірки querySelector падав із помилкою, і сторінка ставала білою.
+    if (!/^[\w-]+$/.test(id)) return;
+    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
   }, [hash, key]);
 
   return (

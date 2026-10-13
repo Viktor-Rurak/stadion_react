@@ -7,6 +7,7 @@
 //     день — і записуватись можна знову);
 //   - час на корті не може перетинатися з чужим записом;
 //   - записатися можна лише в години роботи: 06:00–24:00;
+//   - лише на найближчі 7 днів і не на час, що вже минув;
 //   - долучитися можна лише до ВІДКРИТОЇ гри, де ще є вільні місця.
 // Тут ми лише надсилаємо запити й перекладаємо відповіді бази
 // зрозумілою мовою.
@@ -167,13 +168,6 @@ export async function getDaySchedule(date) {
   return data;
 }
 
-/** Хто грає в конкретній грі (організатор — першим у списку) */
-export async function getGamePlayers(bookingId) {
-  const { data, error } = await supabase.rpc('get_game_players', { p_booking_id: bookingId });
-  if (error) throw new Error('Не вдалося завантажити список гравців');
-  return data;
-}
-
 /**
  * Створити запис на корт.
  *
@@ -272,22 +266,6 @@ export async function cancelBooking(bookingId) {
   }
 }
 
-/** Мій запис на вказану дату (або null, якщо його немає) */
-export async function getMyBookingForDate(date) {
-  const { data: userData } = await supabase.auth.getUser();
-  if (!userData.user) return null;
-
-  const { data, error } = await supabase
-    .from('court_bookings')
-    .select('id, booking_date, start_time, end_time, sport, is_open, max_players, note')
-    .eq('booking_date', date)
-    .eq('user_id', userData.user.id)
-    .maybeSingle();
-
-  if (error) throw new Error('Не вдалося перевірити ваш запис');
-  return data;
-}
-
 // Переклад помилок бази зрозумілою мовою.
 // Коди Postgres: 23505 — порушення унікальності, 23P01 — перетин
 // (exclude), 23514 — порушення перевірки (check), 42501 — заборонено RLS.
@@ -332,8 +310,10 @@ function translateBookingError(error) {
   if (text.includes('note_length')) {
     return 'Коментар задовгий — максимум 200 символів.';
   }
+  // 42501 — відмова політики доступу: дата поза найближчими 7 днями
+  // або час, що вже минув
   if (text.includes('42501')) {
-    return 'Записатися можна лише на сьогодні або майбутні дні.';
+    return 'Записатися можна лише на найближчі 7 днів і на час, який ще не минув.';
   }
   return 'Не вдалося виконати дію. Спробуйте ще раз.';
 }

@@ -2,7 +2,7 @@
 // Щоб додати новий майданчик:
 //   1) додайте ще один запис у цей масив;
 //   2) додайте маску його силуету в planMasks.js (з тим самим key);
-//   3) додайте в index.css стилі .overlay-<key> і правило підсвічування
+//   3) додайте в styles/home.css стилі .overlay-<key> і правило підсвічування
 //      (за зразком .overlay-main).
 export const OBJECTS = [
   {
@@ -15,6 +15,10 @@ export const OBJECTS = [
     overlayImage: '/images/obj-main.png',      // вирізаний PNG об'єкта
     labelSubtitle: '105 × 68 м · трибуни · освітлення',
     labelPosition: { left: '64%', top: '69%' }, // центр об'єкта на плані
+    // Клік по головному полю на плані й кнопка в картці ведуть на новини стадіону
+    link: '/news',
+    linkText: 'Новини',
+    labelAction: 'Натисніть — новини стадіону',
   },
   {
     key: 'train',
@@ -25,6 +29,13 @@ export const OBJECTS = [
     overlayImage: '/images/obj-mini.png',
     labelSubtitle: 'Клубний будинок · роздягальні',
     labelPosition: { left: '46%', top: '20%' },
+    // На полі стоїть камера, яка рахує людей (програма camera-counter):
+    // число видно в картці й на сторінці /fields/train — туди веде клік на плані
+    hasCounter: true,
+    // Камера ще й транслює гру: плеєр на сторінці /fields/train
+    // (вмикається в адмінпанелі, поки вимкнена — плеєра немає)
+    hasStream: true,
+    labelAction: 'Натисніть — трансляція і скільки людей на полі',
   },
   {
     key: 'court',

@@ -1,7 +1,8 @@
 // Секція «Об'єкти»: сітка карток майданчиків.
 // Дані карток лежать у data/objects.js — тут лише розмітка.
 import { Link } from 'react-router-dom';
-import { OBJECTS } from '../data/objects.js';
+import { OBJECTS } from '../../data/objects.js';
+import OccupancyInfo from '../field/OccupancyInfo.jsx';
 
 // Одна картка об'єкта
 function ObjectCard({ object }) {
@@ -15,6 +16,14 @@ function ObjectCard({ object }) {
           Записатися
         </Link>
       )}
+      {/* Майданчик зі своєю сторінкою (головне поле -> новини) */}
+      {object.link && (
+        <Link to={object.link} className="btn-small card-action">
+          {object.linkText}
+        </Link>
+      )}
+      {/* Майданчик із камерою — скільки людей там зараз */}
+      {object.hasCounter && <OccupancyInfo objectKey={object.key} compact />}
     </article>
   );
 }

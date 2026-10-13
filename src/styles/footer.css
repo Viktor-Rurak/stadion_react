@@ -1,0 +1,37 @@
+/* ==========================================================================
+   ПІДВАЛ (components/layout/Footer.jsx).
+   ========================================================================== */
+
+.footer {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 34px var(--side-pad);
+}
+
+.footer-inner {
+  max-width: 1500px;
+  margin: 0 auto;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+  color: var(--text-faint);
+  letter-spacing: 0.03em;
+}
+
+.footer-brand {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+}
+
+/* Пошта в підвалі — такого ж розміру, як решта написів */
+.footer-mail {
+  color: var(--text-faint);
+  letter-spacing: 0.03em;
+}
+
+.footer-mail:hover { color: var(--accent-text); }

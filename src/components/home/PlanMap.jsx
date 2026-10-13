@@ -6,13 +6,19 @@
 // 2. Коли курсор рухається над планом, переводимо його координати
 //    в координати маски й дивимося, чи стоїть там одиничний біт.
 // 3. Якщо так — зберігаємо ключ об'єкта в стані hoveredKey і виставляємо
-//    атрибут data-hover на контейнері. Далі все робить CSS (index.css):
+//    атрибут data-hover на контейнері. Далі все робить CSS (styles/home.css):
 //    темнить план, показує накладку та підпис потрібного об'єкта.
-// 4. Клік по корту веде на сторінку запису, по інших об'єктах — до їхньої картки.
-import { useMemo, useState } from 'react';
+// 4. Клік по корту веде на сторінку запису, по головному полю — на новини,
+//    по штучному полю — на його сторінку з лічильником людей.
+// 5. На телефоні миші немає: об'єкт підсвічується, поки на нього тиснуть
+//    пальцем. Коротке натискання — перехід, довге — лише подивитися.
+import { useMemo, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { OBJECTS, HIT_TEST_ORDER } from '../data/objects.js';
-import { PLAN_MASKS } from '../data/planMasks.js';
+import { OBJECTS, HIT_TEST_ORDER } from '../../data/objects.js';
+import { PLAN_MASKS } from '../../data/planMasks.js';
+
+// Скільки мілісекунд тримати палець, щоб це було «довге натискання»
+const LONG_PRESS_MS = 400;
 
 // Роздільність масок (мусить збігатися з тим, як їх згенеровано)
 const MASK_WIDTH = 209;
@@ -39,6 +45,10 @@ export default function PlanMap() {
   const navigate = useNavigate();
   // Ключ об'єкта під курсором: 'main' | 'train' | 'court' | null
   const [hoveredKey, setHoveredKey] = useState(null);
+  // Для дотиків: чи тримають зараз палець на плані і чи це довге натискання
+  const touchActive = useRef(false);
+  const longPress = useRef(false);
+  const longPressTimer = useRef(null);
 
   // Розпаковуємо всі маски один раз (useMemo кешує результат між рендерами)
   const masks = useMemo(() => {
@@ -65,12 +75,44 @@ export default function PlanMap() {
     return null;
   }
 
-  function handleMouseMove(event) {
+  function updateHover(event) {
     const key = findObjectUnderCursor(event);
     if (key !== hoveredKey) setHoveredKey(key);
   }
 
+  // Миша: підсвічуємо все, над чим курсор.
+  // Палець: лише поки він притиснутий до плану.
+  function handlePointerMove(event) {
+    if (event.pointerType === 'mouse' || touchActive.current) updateHover(event);
+  }
+
+  // Палець торкнувся плану — одразу підсвічуємо об'єкт під ним
+  function handlePointerDown(event) {
+    if (event.pointerType === 'mouse') return;
+    touchActive.current = true;
+    longPress.current = false;
+    updateHover(event);
+    clearTimeout(longPressTimer.current);
+    longPressTimer.current = setTimeout(() => {
+      longPress.current = true;
+    }, LONG_PRESS_MS);
+  }
+
+  // Палець відпустили або браузер почав прокручувати сторінку — гасимо підсвітку
+  function handlePointerEnd(event) {
+    if (event.pointerType === 'mouse') return;
+    touchActive.current = false;
+    clearTimeout(longPressTimer.current);
+    setHoveredKey(null);
+  }
+
   function handleClick(event) {
+    // Після довгого натискання нікуди не переходимо — людина лише роздивлялась
+    if (longPress.current) {
+      longPress.current = false;
+      return;
+    }
+
     const key = findObjectUnderCursor(event);
     const object = OBJECTS.find((o) => o.key === key);
     if (!object) return;
@@ -78,6 +120,8 @@ export default function PlanMap() {
     // Корт, на який можна записатися, веде на сторінку запису.
     // Решта майданчиків — до своєї картки з описом нижче на сторінці.
     if (object.bookable) navigate('/booking');
+    else if (object.link) navigate(object.link);
+    else if (object.hasCounter) navigate('/fields/' + object.key);
     else navigate({ hash: '#' + object.id });
   }
 
@@ -86,9 +130,14 @@ export default function PlanMap() {
       <div
         className="plan-map"
         data-hover={hoveredKey ?? undefined}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={() => setHoveredKey(null)}
+        onPointerMove={handlePointerMove}
+        onPointerDown={handlePointerDown}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
+        onPointerLeave={(e) => e.pointerType === 'mouse' && setHoveredKey(null)}
         onClick={handleClick}
+        // Довге натискання не відкриває меню «Зберегти картинку»
+        onContextMenu={(e) => e.preventDefault()}
       >
         {/* Базова картинка генплану */}
         <img className="plan-base" src="/images/plan-base.png" alt="Генплан комплексу" />

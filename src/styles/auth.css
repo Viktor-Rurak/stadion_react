@@ -1,0 +1,239 @@
+/* ==========================================================================
+   ВІКНО АКАУНТА (components/auth/): реєстрація, вхід, «Забули пароль?»,
+   екран «Майже готово», кнопка повторного листа.
+   Самі поля форм (.field…) — спільні, вони у ui.css.
+   ========================================================================== */
+
+/* --- Вікно реєстрації / входу --- */
+/* Затемнене тло на всю сторінку */
+.auth-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  overflow-y: auto;
+  background: rgba(8, 10, 11, 0.72);
+  backdrop-filter: blur(6px);
+  animation: auth-fade 0.2s ease;
+}
+
+.auth-modal {
+  position: relative;
+  width: 100%;
+  max-width: 460px;
+  margin: auto;
+  padding: clamp(24px, 4vw, 34px);
+  background: var(--card-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  box-shadow: 0 40px 80px -30px rgba(0, 0, 0, 0.95),
+              inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  animation: auth-rise 0.28s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+@keyframes auth-fade {
+  from { opacity: 0; }
+}
+
+@keyframes auth-rise {
+  from { opacity: 0; transform: translateY(14px); }
+}
+
+.auth-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid transparent;
+  background: none;
+  color: var(--text-faint);
+  font-size: 21px;
+  line-height: 1;
+  cursor: pointer;
+  transition: color 0.2s ease, background 0.2s ease;
+}
+
+.auth-close:hover {
+  color: var(--text);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.auth-head { margin-bottom: 20px; }
+
+/* Зелена крапка як у логотипі — над заголовком вікна */
+.auth-head .brand-dot { margin-bottom: 14px; }
+
+.auth-title {
+  margin: 0 0 8px;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 26px;
+  letter-spacing: -0.02em;
+}
+
+.auth-subtitle {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+/* Перемикач «Реєстрація / Вхід» */
+.auth-tabs {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.045);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
+.auth-tab {
+  flex: 1;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 999px;
+  background: none;
+  color: var(--text-muted);
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.auth-tab:hover { color: var(--text); }
+
+.auth-tab.is-active {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+/* --- Поля форми --- */
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+/* Повідомлення про помилку над кнопкою */
+.auth-error {
+  margin: 0;
+  padding: 11px 14px;
+  border-radius: 12px;
+  background: oklch(0.55 0.16 25 / 0.16);
+  border: 1px solid oklch(0.6 0.16 25 / 0.35);
+  color: oklch(0.85 0.09 25);
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 4px;
+  padding: 13px 22px;
+  font-size: 14.5px;
+}
+
+.auth-submit:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Рядок «Вже маєте акаунт? Увійти» */
+.auth-switch {
+  margin: 18px 0 0;
+  text-align: center;
+  font-size: 13.5px;
+  color: var(--text-muted);
+}
+
+.auth-link {
+  border: none;
+  background: none;
+  padding: 0;
+  color: var(--accent-text);
+  font-family: inherit;
+  font-size: 13.5px;
+  cursor: pointer;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.auth-link:hover { color: var(--accent-hover); }
+
+/* Екран «перевірте пошту» після реєстрації */
+.auth-done { text-align: center; }
+
+.auth-done-mark {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  margin: 6px auto 16px;
+  border-radius: 50%;
+  background: oklch(0.72 0.13 148 / 0.16);
+  color: var(--accent-text);
+  font-size: 24px;
+}
+
+.auth-done .auth-subtitle { margin-bottom: 22px; }
+
+/* «Надіслати лист ще раз» із таймером (вікно «Майже готово» і форма входу) */
+.resend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: stretch;
+  margin: 4px 0 2px;
+}
+
+/* Розмір і колір — від .btn-small (ui.css); тут лише ширина й таймер */
+.resend-button {
+  width: 100%;
+  font-variant-numeric: tabular-nums; /* цифри таймера не «стрибають» */
+}
+
+.auth-done .resend { margin: 0 0 18px; text-align: left; }
+
+/* Попередження «не закривайте вікно» */
+.auth-warning {
+  margin: 0 0 14px;
+  padding: 10px 12px;
+  border-radius: 12px;
+  background: oklch(0.75 0.13 85 / 0.1);
+  border: 1px solid oklch(0.75 0.13 85 / 0.3);
+  color: oklch(0.88 0.08 85);
+  font-size: 12.5px;
+  line-height: 1.5;
+  text-align: left;
+}
+
+/* «Помилились у пошті? Скасувати реєстрацію» */
+.auth-cancel { font-size: 13px; }
+
+/* Помилка на сторінці підтвердження з листа */
+.confirm-error { margin-top: 18px; max-width: 520px; }
+
+/* «Забули пароль?» — праворуч під полем пароля */
+.auth-forgot {
+  margin: -6px 0 0;
+  text-align: right;
+  font-size: 13px;
+}
+
+/* Напис про обробку даних під кнопкою реєстрації */
+.auth-consent {
+  margin: 12px 0 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--text-faint);
+  text-wrap: pretty;
+}

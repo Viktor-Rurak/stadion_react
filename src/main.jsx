@@ -1,11 +1,12 @@
-// Точка входу застосунку: підключаємо стилі
-// та "вмонтовуємо" компонент App у <div id="root"> з index.html.
+// Точка входу: звідси починається весь сайт.
+// Підключаємо стилі (styles/index.css збирає всі файли стилів докупи)
+// і "вмонтовуємо" компонент App у <div id="root"> з index.html.
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
 import App from './App.jsx';
 import { AuthProvider } from './lib/AuthContext.jsx';
-import './index.css';
+import './styles/index.css';
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>

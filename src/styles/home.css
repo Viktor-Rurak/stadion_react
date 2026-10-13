@@ -1,0 +1,297 @@
+/* ==========================================================================
+   ГОЛОВНА СТОРІНКА (pages/HomePage.jsx):
+     інтерактивний план   .plan-*  .overlay-*  .label-*   (home/PlanMap.jsx)
+     картки майданчиків   .cards-grid  .card-*            (home/ObjectsSection.jsx)
+     «Як це працює»       .about-*  .how-*                (home/AboutSection.jsx)
+   ========================================================================== */
+
+.plan-section {
+  max-width: 1420px;
+  margin: 0 auto;
+  padding: clamp(14px, 2.5vw, 34px) clamp(12px, 3vw, 40px) clamp(36px, 5vw, 72px);
+}
+
+/* Контейнер плану. JS додає йому атрибут data-hover="main|train|court",
+   коли курсор над відповідним об'єктом, — а всі візуальні зміни нижче
+   робить уже CSS через цей атрибут. */
+.plan-map {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1672 / 941; /* пропорції картинки плану */
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 64px 64px;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 22px;
+  /* На телефоні довге натискання не виділяє текст і не пропонує зберегти картинку */
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.plan-map[data-hover] { cursor: pointer; }
+
+.plan-map img { -webkit-user-drag: none; }
+
+/* Базова картинка плану та всі шари-накладки заповнюють контейнер */
+.plan-base,
+.plan-overlay {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none; /* кліки ловить сам контейнер, не картинки */
+}
+
+.plan-base { transition: filter 0.4s ease; }
+
+/* Коли якийсь об'єкт підсвічений — увесь план темніє, крім нього */
+.plan-map[data-hover] .plan-base {
+  filter: brightness(0.52) saturate(0.55) blur(0.4px);
+}
+
+/* Накладки: вирізані PNG кожного об'єкта. Спочатку невидимі. */
+.plan-overlay {
+  opacity: 0;
+  transform: scale(1) translateY(0);
+  transition: opacity 0.3s ease, transform 0.55s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.overlay-main {
+  transform-origin: 64% 69%;
+  filter: brightness(1.06) saturate(1.14) drop-shadow(0 26px 34px rgba(0, 0, 0, 0.6));
+}
+
+.overlay-train {
+  transform-origin: 46% 20%;
+  filter: brightness(1.08) saturate(1.16) drop-shadow(0 22px 30px rgba(0, 0, 0, 0.6));
+}
+
+.overlay-court {
+  transform-origin: 23% 64%;
+  filter: brightness(1.08) saturate(1.16) drop-shadow(0 22px 30px rgba(0, 0, 0, 0.6));
+}
+
+/* Підсвічений об'єкт трохи «підіймається» над планом */
+.plan-map[data-hover="main"] .overlay-main {
+  opacity: 1;
+  transform: scale(1.035) translateY(-8px);
+}
+
+.plan-map[data-hover="train"] .overlay-train {
+  opacity: 1;
+  transform: scale(1.07) translateY(-7px);
+}
+
+.plan-map[data-hover="court"] .overlay-court {
+  opacity: 1;
+  transform: scale(1.055) translateY(-8px);
+}
+
+/* Підписи об'єктів: точка + картка з назвою. Позиція задається в HTML
+   через style="left:...; top:..." — це координати центру об'єкта. */
+.plan-label {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.plan-map[data-hover="main"] .label-main,
+.plan-map[data-hover="train"] .label-train,
+.plan-map[data-hover="court"] .label-court {
+  opacity: 1;
+}
+
+.label-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: oklch(0.85 0.15 148);
+  box-shadow: 0 0 0 6px oklch(0.72 0.13 148 / 0.22);
+}
+
+.label-card {
+  background: rgba(13, 16, 18, 0.93);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 13px;
+  padding: 10px 15px;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.label-title {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.label-sub {
+  display: block;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* Підказка в підписі майданчика, на який можна записатися */
+.label-action {
+  display: block;
+  font-size: 11px;
+  color: var(--accent-text);
+  margin-top: 5px;
+}
+
+/* На телефоні план маленький — підписи компактніші, щоб не вилазили за край */
+@media (max-width: 600px) {
+  .plan-label { gap: 6px; }
+
+  .label-card { padding: 7px 11px; border-radius: 11px; }
+
+  .label-title { font-size: 14px; }
+
+  .label-sub { font-size: 10.5px; }
+
+  .label-action { font-size: 10.5px; margin-top: 3px; }
+
+  /* Об'єкт під пальцем збільшується помітніше, ніж на великому екрані */
+  .plan-map[data-hover="main"] .overlay-main { transform: scale(1.06) translateY(-5px); }
+
+  .plan-map[data-hover="train"] .overlay-train { transform: scale(1.14) translateY(-4px); }
+
+  .plan-map[data-hover="court"] .overlay-court { transform: scale(1.11) translateY(-5px); }
+}
+
+/* Сітка карток: колонки самі підлаштовуються під ширину екрана */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+  gap: clamp(14px, 1.6vw, 22px);
+}
+
+.card {
+  scroll-margin-top: 100px; /* відступ при переході за якорем #obj-... */
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  box-shadow: 0 26px 44px -26px rgba(0, 0, 0, 0.9),
+              inset 0 1px 0 rgba(255, 255, 255, 0.045);
+  border-radius: 20px;
+  padding: 28px 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 38px 62px -24px rgba(0, 0, 0, 0.95),
+              inset 0 1px 0 rgba(255, 255, 255, 0.07);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.card-title {
+  margin: 0;
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 22px;
+  letter-spacing: -0.015em;
+}
+
+.card-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  flex: 1; /* розтягується, щоб нижні рядки карток були на одному рівні */
+  text-wrap: pretty;
+}
+
+/* Кнопка в картці майданчика («Записатися», «Новини»).
+   Розмір і колір бере від .btn-small (ui.css) — тут лише розташування. */
+.card-action {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.section-head + .about-lead { margin-top: -6px; }
+
+.about-lead {
+  margin: 0 0 clamp(26px, 3vw, 38px);
+  max-width: 640px;
+  font-size: clamp(15px, 1.5vw, 17px);
+  line-height: 1.65;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+/* Чотири кроки запису */
+.how-steps {
+  list-style: none;
+  margin: 0 0 clamp(26px, 3vw, 40px);
+  padding: 0;
+  display: grid;
+  /* 240px — щоб на широкому екрані всі чотири кроки стали в один ряд */
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(14px, 1.6vw, 20px);
+}
+
+.how-step {
+  display: flex;
+  gap: 14px;
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 22px 38px -24px rgba(0, 0, 0, 0.9);
+}
+
+/* Кружечок із номером кроку */
+.how-number {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: oklch(0.72 0.13 148 / 0.16);
+  color: var(--accent-text);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.how-title {
+  margin: 0 0 6px;
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.how-text {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--text-muted);
+  text-wrap: pretty;
+}
+
+/* Що на території за що відповідає */
+.about-places {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: clamp(18px, 2vw, 30px);
+  border-top: 1px solid var(--border-strong);
+  padding: clamp(24px, 3vw, 34px) 0 0;
+}
+
+.about-place .how-title { color: var(--text); }
